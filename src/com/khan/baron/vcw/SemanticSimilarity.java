@@ -21,7 +21,7 @@ public class SemanticSimilarity {
         METHOD_JCN,
         METHOD_LESK,
         METHOD_FASTLESK,
-        METHOD_LEACOCK,
+        METHOD_LCH,
         METHOD_PATH,
         METHOD_RES,
         METHOD_COS
@@ -34,7 +34,7 @@ public class SemanticSimilarity {
     //Use all senses, not just most frequent sense (slower but more accurate)
     private SemanticSimilarity() { WS4JConfiguration.getInstance().setMFS(false); }
 
-    private static SimilarityMethod sCurrentMethod1 = SimilarityMethod.METHOD_WUP;
+    private static SimilarityMethod sCurrentMethod1 = SimilarityMethod.METHOD_LCH;
     private static SimilarityMethod sCurrentMethod2 = null;
 
     private ILexicalDatabase mDb = null;
@@ -77,7 +77,7 @@ public class SemanticSimilarity {
                 case METHOD_FASTLESK:
                     method = new FastLesk(mDb);
                     break;
-                case METHOD_LEACOCK:
+                case METHOD_LCH:
                     method = new LeacockChodorow(mDb);
                     break;
                 case METHOD_PATH:
