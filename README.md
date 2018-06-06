@@ -28,6 +28,14 @@ using a sword within a video game:
 - "launch an assault using the sword"
 - "obliterate the enemy with a pointy weapon"
 
+Or commands that map to healing with a potion:
+
+- "heal"
+- "recover"
+- "rest"
+- "heal with a potion"
+- "regenerate using an elixer"
+
 A naive approach would be to use a `switch` statement and add every possible
 variation of the command:
 ```java
@@ -38,7 +46,19 @@ switch(input) {
   case "obliterate the enemy with a pointy weapon":
      attackWithWeapon();
      break;
-  ...
+  case "heal":
+  case "recover":
+  //...
+  case "rest":
+     heal();
+     break;
+  case "heal with a potion":
+  case "recover with a potion":
+  //...
+  case "regenerate using an elixer":
+     healWithPotion();
+     break;
+  //...
 }
 ```
 However, this misses out on a lot of other variations of the command (e.g.
@@ -47,7 +67,8 @@ possible variation of a command in this way.
 
 
 Another approach (used by Houndify) is to create a regex-style expression to
-denote the structure of acceptable phrases. For example:
+denote the structure of acceptable phrases. For example, a regex expression for
+detecting commands for attacking with a sword would look like this:
 
 ```
 ("attack" | "hit") . "with" . ["a"] . ("sword" | "blade")
