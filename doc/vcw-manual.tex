@@ -1,0 +1,269 @@
+\documentclass{article}
+\usepackage{fullpage}
+
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[scaled=1]{helvet}
+\usepackage[helvet]{sfmath}
+\everymath={\sf}
+
+\usepackage{parskip}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+
+\definecolor{grey}{rgb}{0.9,0.9,0.9} % Color of the box surrounding the title - these values can be changed to give the box a different color
+
+\definecolor{javared}{rgb}{0.6,0,0} % for strings
+\definecolor{javagreen}{rgb}{0.25,0.5,0.35} % comments
+\definecolor{javapurple}{rgb}{0.5,0,0.35} % keywords
+\definecolor{javadocblue}{rgb}{0.25,0.35,0.75} % javadoc
+
+\title{Voice Commands with WordNet (VCW) Manual}
+\author{Baron Khan}
+%\company{Imperial College London}
+\setcounter{tocdepth}{2}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Introduction} 
+Voice Commands with WordNet (VCW) is a Java library for processing user commands, and can be used to add voice commands to an application.\footnote{https://github.com/BaronKhan/voice-commands-with-wordnet} VCW takes as input the user's utterance (as a string) and maps it to an action within the application. All processing is near-instantaneous on modern processors (including phones and tablets) and does not require an Internet connection. VCW can be used to add voice commands to video games, embedded systems, or any piece of software.
+
+VCW uses Princeton University's WordNet database to find relationships between words, in order to map countless variations of commands to actions within the application without having to hard-code any phrases. VCW is compatible with any Java 8 project, as well as Android applications supporting Java 8.
+
+\section{Getting Started with VCW} 
+\subsection{Building the Library}
+
+VCW can be built into a Java archive (JAR) using the \texttt{build.sh} Bash script in the source repository.\footnote{https://github.com/BaronKhan/voice-commands-with-wordnet/tree/master/build} The source files can also be included directly in your project.
+
+\subsection{Adding Dependencies}
+
+As well as adding the VCW Java archive file to your project, the following dependencies are required for VCW to work, and need to be added separately to your Java project as dependencies:
+
+\begin{itemize}
+\item Commons Compress 1.15
+\item Java WordNet Interface (\url{https://projects.csail.mit.edu/jwi/})
+\item Stanford POS Tagger (\url{https://nlp.stanford.edu/software/tagger.shtml#Download})
+\item WS4J (\url{https://code.google.com/archive/p/ws4j/downloads})
+\end{itemize}
+
+\subsection{Loading the Models}
+
+VCW requires access to a local WordNet database and a Part-of-Speech (POS) tagging model. Please download the following files and include them in your project's working directory:
+
+\begin{itemize}
+\item \texttt{english-left3words-distsim.tagger} (\url{https://nlp.stanford.edu/software/tagger.shtml})
+\item \texttt{wn3.1.dict/dict/} (\url{http://wordnetcode.princeton.edu/wn3.1.dict.tar.gz})
+\end{itemize}
+
+\subsection{Speech-To-Text Engine}
+
+VCW \textbf{does not} transform the user's utterance from audio to a string. It simply processes the string and maps the intent to an action in the application. An external speech-to-text engine is required if the user's input is not already a string. There are many open-source APIs that do this, such as Google's Speech-to-Text API or PocketSphinx.
+
+\section{Using VCW}
+This section describes how to use the library in a Java project, and provides examples of adding commands for use in a video game. Once finished, the system should be able to map the following commands to an intent for attacking a sword without having to hard-code any phrases:
+
+\begin{itemize}
+\item "attack with a sword"
+\item "hit with something sharp"
+\item "use a blade to fight"
+\item "launch an assault using the sword"
+\item "obliterate the enemy with a pointy weapon"
+\item and much more...
+\end{itemize}
+
+\subsection{Setting Up the Library}
+\label{section:setting}
+Before using any methods in the library, load the POS tagging model and WordNet database (as a URL).
+
+\lstset{language=Java,
+basicstyle=\ttfamily\scriptsize,
+keywordstyle=\color{javapurple}\bfseries,
+stringstyle=\color{javared},
+commentstyle=\color{javagreen},
+morecomment=[s][\color{javadocblue}]{/**}{*/},
+numbers=left,
+numberstyle=\tiny\color{black},
+stepnumber=2,
+numbersep=10pt,
+tabsize=4,
+showspaces=false,
+showstringspaces=false,
+breaklines=true,
+frame=single}
+
+\begin{lstlisting}[language=Java, label=lst:setup]
+VoiceProcess.loadTagger("english-left3words-distsim.tagger");	// Load POS tagging model
+private URL url = new URL("file", null, "wn3.1.dict/dict/");	// Load WordNet database
+\end{lstlisting}
+
+\subsection{Entities}
+
+VCW assumes that every user intent specifies the action to be performed, and optionally the target and the context of the action. For example, in the phrase, "attack the enemy with a sword", the action is "attack", while the target is "enemy" and the context is "sword".
+
+In VCW, an \texttt{Entity} is anything that can be either a target or a context. Java classes should inherit from the \texttt{Entity} class, and call its constructor using \texttt{super()}, which takes as input the name of the entity. Entities are also grouped into context types using the \texttt{setContext()} method. Listing \ref{lst:entity-example} shows an example of a sword entity that will be used.
+
+\lstset{language=Java,
+basicstyle=\ttfamily,
+keywordstyle=\color{javapurple}\bfseries,
+stringstyle=\color{javared},
+commentstyle=\color{javagreen},
+morecomment=[s][\color{javadocblue}]{/**}{*/},
+numbers=left,
+numberstyle=\tiny\color{black},
+stepnumber=2,
+numbersep=10pt,
+tabsize=4,
+showspaces=false,
+showstringspaces=false,
+breaklines=true,
+frame=single}
+
+\begin{lstlisting}[language=Java, caption=Example of a Sword Entity, label={lst:entity-example}]
+public class Sword extends Entity {
+    public Sword() {
+        super("sword");
+        setContext("weapon");
+    }
+}
+\end{lstlisting}
+
+Here, since a sword is a weapon, its context type is set to "weapon". The context type is used to index the table in a \texttt{ContextActionMap}.
+
+\subsection{Creating a Context-Action Map}
+\label{section:context-action-map}
+
+VCW's system for creating voice commands is based on mapping actions and contexts (i.e. entities for which the action is applied with) to methods that will be executed. 
+
+Create a \texttt{ContextActionMap} that contains a table with each cell containing a an instance of \texttt{Action}. The table is indexed using actions along the top (as strings) and context types along the left. Table \ref{game-table} shows an example of this for a game.
+
+\begin{table}[h]
+\centering
+\caption{A table mapping actions to context types}
+\label{game-table}
+\begin{tabular}{|l|l|l|l|}\hline
+                 & \textbf{attack} & \textbf{heal} & \textbf{move} \\ \hline
+\textbf{default} & Attack          & Heal          & Move          \\ \hline
+\textbf{weapon}  & AtkWithWeapon       &               & \\ \hline
+\textbf{potion}  &                 & HealWithPotion    & \\ \hline
+\end{tabular}
+\end{table}
+
+This table contains the actions, "attack", "heal" and "move", and the context types, "weapon" and "potion". For example, if the user executes an "attack" action with the context type being "weapon" (e.g. if they say, "attack with a sword"), then the \texttt{AtkWithWeapon} Action class will be invoked (see section \ref{section:actions} for more on \texttt{Actions}). If no context is specified, the "default" action is invoked (e.g. \texttt{Attack}). Blank cells indicate that the action with that context type is not compatible (for example, you cannot "attack" with a "potion").
+
+A \texttt{ContextActionMap} Java class can easily be generated from a CSV file using the included Python script, \texttt{generateTable.py}. Simply having Table \ref{game-table} in a CSV file and running the following command:
+
+\begin{center}
+\texttt{python generateTable.py game-table.csv GameContextActionMap}
+\end{center}
+
+will generate \texttt{GameContextActionMap.java} which you can add to your project, as in Listing \ref{lst:game-context-action-map}.
+
+\lstset{language=Java,
+basicstyle=\ttfamily\scriptsize,
+keywordstyle=\color{javapurple}\bfseries,
+stringstyle=\color{javared},
+commentstyle=\color{javagreen},
+morecomment=[s][\color{javadocblue}]{/**}{*/},
+numbers=left,
+numberstyle=\tiny\color{black},
+stepnumber=2,
+numbersep=10pt,
+tabsize=4,
+showspaces=false,
+showstringspaces=false,
+breaklines=true,
+frame=single}
+
+\begin{lstlisting}[language=Java, caption=Example of a ContextActionMap, label={lst:game-context-action-map}]
+public class GameContextActionMap extends ContextActionMap {
+    public GameContextActionMap(GlobalState state) {
+        super(state);
+        setActionList(              "attack",            "heal",               "move");
+        addDefaultContextActions(   new Attack(),        new Heal(),           new Move());
+        addContextActions("weapon", new AtkWithWeapon(), null,                 null);
+        addContextActions("potion", null,                new HealWithPotion(), null);
+    }
+}
+\end{lstlisting}
+
+\subsection{Creating a GlobalState}
+
+A \texttt{GlobalState} is an object used for passing the state of the application around the system. The \texttt{GlobalState} should be able to access different objects and data that may be required to execute different actions. In this case, let's create a \texttt{GameState} object that contains our game logic. If an action decreases the health of an enemy (e.g. attacking with a sword), then the enemy's health should be accessible from this class.
+
+\lstset{language=Java,
+basicstyle=\ttfamily,
+keywordstyle=\color{javapurple}\bfseries,
+stringstyle=\color{javared},
+commentstyle=\color{javagreen},
+morecomment=[s][\color{javadocblue}]{/**}{*/},
+numbers=left,
+numberstyle=\tiny\color{black},
+stepnumber=2,
+numbersep=10pt,
+tabsize=4,
+showspaces=false,
+showstringspaces=false,
+breaklines=true,
+frame=single}
+
+\begin{lstlisting}[language=Java, label=lst:game-state]
+public class GameState extends GlobalState {
+	//...
+}
+\end{lstlisting}
+
+\subsection{Creating Actions}
+\label{section:actions}
+An \texttt{Action} is a wrapper that is placed in the cells of a \texttt{ContextActionMap}, as shown in Listing \ref{lst:game-context-action-map} of Section \ref{section:context-action-map}. Each \texttt{Action} should override the \texttt{execute} method, which takes as input your \texttt{GlobalState} object (to access data and objects) and the current target if specified (otherwise this is set to the default target). Listing \ref{lst:action-example} shows an example of an \texttt{Action} for attacking with a weapon.
+
+\begin{lstlisting}[language=Java, caption=Example of an Action, label={lst:action-example}]
+public class AtkWithWeapon extends Action {
+    public String execute(GlobalState state, Entity currentTarget) {
+        //Insert code to attack with weapon (e.g. decrease enemy health)
+        //Access current context using Action.getCurrentContext()
+        return "Return a response to the user.";
+    }
+}
+\end{lstlisting}
+
+\subsection{Processing a Voice Command}
+
+Finally, the user's utterance can now be processed. In the \texttt{GlobalState} class (e.g. in this example, the \texttt{GameState} class), add a \texttt{VoiceProcess} class, and associate it to your \texttt{GlobalState} and \texttt{ContextActionMap}. Once the \texttt{VoiceProcess} class is created, the WordNet database (that was loaded in Section \ref{section:setting}) must be added to it using the \texttt{addDictionary} method.
+
+\begin{lstlisting}[language=Java, label={lst:voiceprocess}]
+public class GameState extends GlobalState {
+    public GameState() {
+        private ContextActionMap mMap = new GameContextActionMap(this);
+        private VoiceProcess mVoiceProcess = new VoiceProcess(this, mMap);
+        mCommandProcess.addDictionary(url);
+    }
+\end{lstlisting}
+
+Next, the possible targets and contexts need to be added to the \texttt{ContextActionMap}. These possible targets/ need to be dynamically updated as the state changes (e.g. if the enemy is no longer present, it need to be removed)
+
+\begin{lstlisting}[language=Java, label={lst:voiceprocess-2}]
+mMap.addPossibleContexts(Arrays.asList(new Sword(), new Potion()));
+mMap.addPossibleTargets(Arrays.asList(new Enemy()));
+\end{lstlisting}
+
+A default target can also be set. This is the target that is used if no target is specified in the user's intent. It can be set using \texttt{mMap.setDefaultTarget(target)} method. You can also set the default target to the user, using \texttt{mMap.setDefaultTargetToSelf()}. 
+
+You can now process the user's utterance and return the text response (to be displayed to the user) as the action executes. If the input is not understood, then the string returned is, "Intent not understood", and no changes are made to the state.
+
+\begin{lstlisting}[language=Java, label={lst:voiceprocess-3}]
+String input = "attack with a sword";
+String output = mVoiceProcess.processInput(input);	//GameState is updated
+System.out.println(output);
+\end{lstlisting}
+
+
+\subsection{Adding More Commands}
+
+To add more commands to your application, simply create new \texttt{Action} wrappers and update the fields in the \texttt{ContextActionMap}.
+
+\subsection{More Examples}
+
+More examples can be found in the library's repository, in the \texttt{examples} directory.\footnote{https://github.com/BaronKhan/voice-commands-with-wordnet/tree/master/examples}  The examples include adding voice commands to a game, a video conferencing application, and a cooking application.
+
+\end{document}

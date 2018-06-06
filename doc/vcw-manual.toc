@@ -1,0 +1,15 @@
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}
+\contentsline {section}{\numberline {2}Getting Started with VCW}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Building the Library}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Adding Dependencies}{2}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Loading the Models}{2}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}Speech-To-Text Engine}{2}{subsection.2.4}
+\contentsline {section}{\numberline {3}Using VCW}{2}{section.3}
+\contentsline {subsection}{\numberline {3.1}Setting Up the Library}{3}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Entities}{3}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Creating a Context-Action Map}{3}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Creating a GlobalState}{4}{subsection.3.4}
+\contentsline {subsection}{\numberline {3.5}Creating Actions}{4}{subsection.3.5}
+\contentsline {subsection}{\numberline {3.6}Processing a Voice Command}{5}{subsection.3.6}
+\contentsline {subsection}{\numberline {3.7}Adding More Commands}{5}{subsection.3.7}
+\contentsline {subsection}{\numberline {3.8}More Examples}{5}{subsection.3.8}

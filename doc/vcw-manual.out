@@ -1,0 +1,15 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Getting Started with VCW}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Building the Library}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Adding Dependencies}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Loading the Models}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Speech-To-Text Engine}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{Using VCW}{}% 7
+\BOOKMARK [2][-]{subsection.3.1}{Setting Up the Library}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.2}{Entities}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.3}{Creating a Context-Action Map}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.4}{Creating a GlobalState}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.5}{Creating Actions}{section.3}% 12
+\BOOKMARK [2][-]{subsection.3.6}{Processing a Voice Command}{section.3}% 13
+\BOOKMARK [2][-]{subsection.3.7}{Adding More Commands}{section.3}% 14
+\BOOKMARK [2][-]{subsection.3.8}{More Examples}{section.3}% 15
