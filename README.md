@@ -100,3 +100,18 @@ as almost any other type of variation of the command.
 
 See the [documentation](https://github.com/BaronKhan/voice-commands-with-wordnet/blob/master/doc/vcw-manual.pdf)
 for more details on how to use the library.
+
+How it Works
+---------------
+
+VCW uses a slot-filling grammar to parse imperative commands.
+
+
+![SFS](https://i.imgur.com/KCWxVBA.png)
+
+Using the user's input and the table above, the system searches for the action
+string as well as the context, and indexes the table to execute the action.
+
+It also uses a semantic similarity engine to detect if any words in the input
+are similar to the available actions, targets and context. For instance,
+the word, "hit" is semantically similar to "attack", so can be used instead.
