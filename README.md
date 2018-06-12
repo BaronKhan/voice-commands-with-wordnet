@@ -55,7 +55,7 @@ switch(input) {
   case "heal with a potion":
   case "recover with a potion":
   //...
-  case "regenerate using an elixer":
+  case "regenerate using an elixir":
      healWithPotion();
      break;
   //...
